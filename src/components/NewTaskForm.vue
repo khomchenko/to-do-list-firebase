@@ -22,7 +22,13 @@
 import { reactive } from "vue";
 import { db } from "@/firebase";
 
-const newTask = reactive({
+interface Task {
+  creationTime: number | null;
+  description: string;
+  completed: boolean;
+}
+
+const newTask: Task = reactive({
   creationTime: null,
   description: "",
   completed: false,
@@ -30,7 +36,7 @@ const newTask = reactive({
 
 const tasksCollection = db.collection("tasks");
 
-const createNewTask = () => {
+const createNewTask = (): void => {
   tasksCollection.add({
     ...newTask,
     creationTime: Date.now(),

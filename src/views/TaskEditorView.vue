@@ -38,11 +38,11 @@ import { db } from "@/firebase";
 
 const route = useRoute();
 const router = useRouter();
-const taskID = route.query.id;
+const taskID = route.query.id as string;
 
-const description = ref("");
-const completed = ref(null);
-const creationTime = ref("");
+const description = ref<string>("");
+const completed = ref<boolean | null>(null);
+const creationTime = ref<string>("");
 
 const tasksCollection = db.collection("tasks");
 const getTask = tasksCollection
@@ -50,8 +50,8 @@ const getTask = tasksCollection
   .get()
   .then((doc) => {
     if (doc.exists) {
-      description.value = doc.data()?.description;
-      completed.value = doc.data()?.completed;
+      description.value = doc.data()?.description as string;
+      completed.value = doc.data()?.completed as boolean | null;
       creationTime.value = new Date(
         doc.data()?.creationTime
       ).toLocaleTimeString("en-US", {
@@ -63,13 +63,13 @@ const getTask = tasksCollection
       console.log("No result!");
     }
   })
-  .catch((error) => {
+  .catch((error: Error) => {
     console.log("Error getting document:", error);
   });
 
 getTask;
 
-const updateTask = () => {
+const updateTask = (): void => {
   tasksCollection
     .doc(taskID)
     .get()
@@ -84,14 +84,14 @@ const updateTask = () => {
             console.log("Task successfully updated!");
             router.push("/");
           })
-          .catch((error) => {
+          .catch((error: Error) => {
             console.log("Error updating task:", error);
           });
       } else {
         console.log("No result!");
       }
     })
-    .catch((error) => {
+    .catch((error: Error) => {
       console.log("Error getting document:", error);
     });
 };

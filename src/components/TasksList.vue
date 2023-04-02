@@ -38,18 +38,28 @@
 import { db } from "@/firebase";
 import { ref } from "vue";
 
+interface Task {
+  id: string;
+  description: string;
+  completed: boolean;
+  creationTime: number;
+}
+
 const tasksCollection = db.collection("tasks");
-const tasks = ref([]);
+const tasks = ref<Task[]>([]);
 
 const getTasks = tasksCollection
   .orderBy("creationTime", "asc")
   .onSnapshot((snapshot) => {
-    tasks.value = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+    tasks.value = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    })) as Task[];
   });
 
 getTasks;
 
-const deleteTask = (taskID: string | undefined) => {
+const deleteTask = (taskID: string | undefined): void => {
   tasksCollection
     .doc(taskID)
     .get()
@@ -60,19 +70,19 @@ const deleteTask = (taskID: string | undefined) => {
           .then(() => {
             console.log("Deleted successfully!");
           })
-          .catch((error) => {
+          .catch((error: Error) => {
             console.log("Deletion unsuccessful:", error);
           });
       } else {
         console.log("No result!");
       }
     })
-    .catch((error) => {
+    .catch((error: Error) => {
       console.log("Error getting document:", error);
     });
 };
 
-const updateTaskCompletion = (taskID: string | undefined) => {
+const updateTaskCompletion = (taskID: string | undefined): void => {
   tasksCollection
     .doc(taskID)
     .get()
@@ -85,14 +95,14 @@ const updateTaskCompletion = (taskID: string | undefined) => {
           .then(() => {
             console.log("Completion task updated!");
           })
-          .catch((error) => {
+          .catch((error: Error) => {
             console.log("Error updating completion:", error);
           });
       } else {
         console.log("No result!");
       }
     })
-    .catch((error) => {
+    .catch((error: Error) => {
       console.log("Error getting document:", error);
     });
 };
